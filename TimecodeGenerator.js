@@ -115,90 +115,93 @@ timestamp[42] = syncWord[12];timestamp[43] = syncWord[13];timestamp[44] = syncWo
 
 function initializeTimecode()
 (
-numBits = 46;
-secPerBit = 1/(2*slider6); // bits per frame // 30 frames a second
-secOfTimecode = (numBits*secPerBit);
+    numBits = 46;
+    secPerBit = 1/(2*slider6); // bits per frame // 30 frames a second
+    secOfTimecode = (numBits*secPerBit);
 );
 
 ///// convert to hours, seconds, minutes of file /////
 
 function findTimeData(a)
 (
-seconds = sample_count/srate;
-minutes = seconds/60;
-hours = minutes/60;
-decimalseconds = (seconds-(floor(seconds)));
-mantissa = floor(decimalseconds*100);
+    seconds = sample_count/srate;
+    minutes = seconds/60;
+    hours = minutes/60;
+    decimalseconds = (seconds-(floor(seconds)));
+    mantissa = floor(decimalseconds*100);
 );
 
 function determineTimestampTime()
 (
-secondsTS = (floor(seconds + secOfTimecode)%60);
-minutesTS = (floor(minutes + (secOfTimecode/60))%60);
-hoursTS = (floor(hours + (secOfTimeCode/(60*60)))%60);
-mantissaTS = floor(((seconds+secofTimecode)-floor(seconds+secOfTimeCode))*100);
+    secondsTS = (floor(seconds + secOfTimecode)%60);
+    minutesTS = (floor(minutes + (secOfTimecode/60))%60);
+    hoursTS = (floor(hours + (secOfTimeCode/(60*60)))%60);
+    mantissaTS = floor(((seconds+secofTimecode)-floor(seconds+secOfTimeCode))*100);
 );
 
 ///// convert integers to binary (decToBin) /////
 
 function decToBinMantissa(decimal)
 (
-//[80,40,20,10,8,4,2,1]
-manWeights = 1800;
-manWeights[0] = 80;manWeights[1] = 40;manWeights[2] = 20;manWeights[3] = 10;
-manWeights[4] = 8;manWeights[5] = 4;manWeights[6] = 2;manWeights[7] = 1;
-iman=0;
+    //[80,40,20,10,8,4,2,1]
+    manWeights = 1800;
+    manWeights[0] = 80;manWeights[1] = 40;manWeights[2] = 20;manWeights[3] = 10;
+    manWeights[4] = 8;manWeights[5] = 4;manWeights[6] = 2;manWeights[7] = 1;
+    iman=0;
 
-while (
-(decimal>=manWeights[i]) ? (decimal-=manWeights[i];manBin[8-i] = 1;) : (manBin[8-i] = 0);
-iman+= 1;
-iman < 8;
-);
+    while 
+    (
+        (decimal>=manWeights[i]) ? (decimal-=manWeights[i];manBin[8-i] = 1;) : (manBin[8-i] = 0);
+        iman+= 1;
+        iman < 8;
+    );
 );
 
 function decToBinHours(decimal)
 (
-//[20,10,8,4,2,1]
-hourWeights = 1900;
-hourWeights[1] = 20;hourWeights[2] = 10;hourWeights[3] = 8;
-hourWeights[4] = 4;hourWeights[5] = 2;hourWeights[6] = 1;
-
-ihr=0;
-while (
-(decimal>=hourWeights[i]) ? (decimal-=hourWeights[i];[6-i] = 1;) : (hourBin[6-i] = 0);
-ihr+= 1;
-ihr < 6;
-);
+    //[20,10,8,4,2,1]
+    hourWeights = 1900;
+    hourWeights[1] = 20;hourWeights[2] = 10;hourWeights[3] = 8;
+    hourWeights[4] = 4;hourWeights[5] = 2;hourWeights[6] = 1;
+    
+    ihr=0;
+    while (
+        (decimal>=hourWeights[i]) ? (decimal-=hourWeights[i];[6-i] = 1;) : (hourBin[6-i] = 0);
+        ihr+= 1;
+        ihr < 6;
+    );
 );
 
 function decToBinMins(decimal)
 (
-//[40,20,10,8,4,2,1]
-minWeights = 2000;
-minWeights[0] = 40;minWeights[1] = 20;minWeights[2] = 10;
-minWeights[3] = 8;minWeights[4] = 4;minWeights[5] = 2;minWeights[6] = 1;
-imin=0;
+    //[40,20,10,8,4,2,1]
+    minWeights = 2000;
+    minWeights[0] = 40;minWeights[1] = 20;minWeights[2] = 10;
+    minWeights[3] = 8;minWeights[4] = 4;minWeights[5] = 2;minWeights[6] = 1;
+    imin=0;
 
-while (
-(decimal>=minWeights[i]) ? (decimal-=minWeights[i];[7-i] = 1;) : (minBin[7-i] = 0);
-imin+= 1;
-imin < 7;
-);
+    while
+    (
+    (decimal>=minWeights[i]) ? (decimal-=minWeights[i];[7-i] = 1;) : (minBin[7-i] = 0);
+    imin+= 1;
+    imin < 7;
+    );
 );
 
 function decToBinSecs(decimal)
 (
-//[40,20,10,8,4,2,1]
-secWeights = 2100;
-secWeights[0] = 40;secWeights[1] = 20;secWeights[2] = 10;
-secWeights[3] = 8;secWeights[4] = 4;secWeights[5] = 2;secWeights[6] = 1;
-isec=0;
+    //[40,20,10,8,4,2,1]
+    secWeights = 2100;
+    secWeights[0] = 40;secWeights[1] = 20;secWeights[2] = 10;
+    secWeights[3] = 8;secWeights[4] = 4;secWeights[5] = 2;secWeights[6] = 1;
+    isec=0;
 
-while (
-(decimal>=secWeights[i]) ? (decimal-=secWeights[i];[7-i] = 1;) : (secBin[7-i] = 0);
-isec+= 1;
-isec < 7;
-);
+  while 
+  (
+    (decimal>=secWeights[i]) ? (decimal-=secWeights[i];[7-i] = 1;) : (secBin[7-i] = 0);
+    isec+= 1;
+    isec < 7;
+  );
 );
 
 // set all determined time values to their respective places in their arrays
